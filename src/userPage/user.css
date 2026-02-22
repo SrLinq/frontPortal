@@ -1,0 +1,164 @@
+/* ========================================= */
+/* USER PROFILE STYLING                      */
+/* ========================================= */
+
+.profile-sidebar {
+  align-items: center;
+  text-align: center;
+}
+
+.avatar-glow-container {
+  position: relative;
+  margin-bottom: 1.5rem;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+}
+
+.avatar-glow-container img {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 50% !important;
+  margin-bottom: 0 !important;
+  position: relative;
+  z-index: 2;
+  box-shadow: none !important;
+}
+
+.avatar-glow-container:hover img {
+  transform: none !important;
+}
+
+.avatar-glow-container::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  bottom: -4px;
+  left: -4px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #00f2fe, #f093fb, #f5576c, #00f2fe);
+  z-index: 1;
+  filter: blur(10px);
+  opacity: 0.85;
+  animation: rotateGlow 4s linear infinite;
+}
+
+@keyframes rotateGlow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.profile-name {
+  font-size: 1.5rem !important;
+  margin-bottom: 0.2rem !important;
+}
+
+.profile-role {
+  color: #a0aec0 !important;
+  font-size: 0.95rem !important;
+  margin-bottom: 2rem !important;
+}
+
+.skills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  justify-content: center;
+  width: 100%;
+}
+
+.skill-badge {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.skill-python {
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+}
+.skill-react {
+  border-color: rgba(97, 218, 251, 0.4);
+  color: #61dafb;
+}
+.skill-ux {
+  border-color: rgba(244, 114, 182, 0.4);
+  color: #f472b6;
+}
+.skill-figma {
+  border-color: rgba(251, 146, 60, 0.4);
+  color: #fb923c;
+}
+
+.skill-badge:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.profile-main {
+  grid-column: span 2;
+}
+
+@media (max-width: 900px) {
+  .profile-main {
+    grid-column: span 1;
+  }
+}
+
+.section-title {
+  font-size: 1.25rem !important;
+  margin-bottom: 1.5rem !important;
+  color: #00f2fe !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.8rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  transition: all 0.3s ease;
+}
+
+.info-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(0, 242, 254, 0.2);
+  transform: translateY(-2px);
+}
+
+.info-item label {
+  font-size: 0.85rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-item p {
+  color: #e2e8f0 !important;
+  font-size: 1.05rem !important;
+  margin: 0 !important;
+  font-weight: 500;
+}

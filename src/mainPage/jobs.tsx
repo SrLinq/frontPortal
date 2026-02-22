@@ -1,10 +1,9 @@
-import JobPost from "../mainPage/jobPost";
+import JobPost from "./jobPost";
 
-function ProjectsDashboard() {
+function Job() {
   return (
     <div>
-      <h1>ProjectsDashboard</h1>
-      <button>Create Project</button>
+      <h1>Jobs</h1>
       <JobPost path="" title="Job 1" description="Description 1" price={100} />
       <JobPost path="" title="Job 2" description="Description 2" price={200} />
       <JobPost path="" title="Job 3" description="Description 3" price={300} />
@@ -12,4 +11,4 @@ function ProjectsDashboard() {
   );
 }
 
-export default ProjectsDashboard;
+export default Job;
