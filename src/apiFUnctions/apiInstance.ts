@@ -3,7 +3,7 @@ import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
 // Create an Axios instance
 const instance = axios.create({
-  baseURL: apiUrl,
+  baseURL: "http://localhost:3000",
 });
 
 instance.interceptors.request.use(
@@ -18,7 +18,7 @@ instance.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 export default instance;

@@ -1,8 +1,50 @@
 import { useState } from "react";
+import { post } from "../apiFUnctions/apiFunctions";
 import "./first.css";
 
 function FirstPage() {
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
+  const [userType, setUserType] = useState<"student" | "business">("student");
+
+  // Login State
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+
+  // Register State
+  const [regFirstName, setRegFirstName] = useState("");
+  const [regLastName, setRegLastName] = useState("");
+  const [regEmail, setRegEmail] = useState("");
+  const [regPassword, setRegPassword] = useState("");
+  const [regConfirmPassword, setRegConfirmPassword] = useState("");
+
+  const handleLogin = async () => {
+    const data = await post("/auth/login", {
+      email: loginEmail,
+      password: loginPassword,
+    });
+    if (data) {
+      console.log("Login success:", data);
+      // maybe redirect here later
+    }
+  };
+
+  const handleRegister = async () => {
+    if (regPassword !== regConfirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+    const data = await post("/auth/register", {
+      email: regEmail,
+      password: regPassword,
+      role: userType,
+      firstName: regFirstName,
+      lastName: regLastName,
+    });
+    if (data) {
+      console.log("Register success:", data);
+      closeSignUp();
+    }
+  };
 
   const openSignUp = () => setIsSignUpOpen(true);
   const closeSignUp = () => setIsSignUpOpen(false);
@@ -19,9 +61,22 @@ function FirstPage() {
         <div className="hero-actions">
           <div className="login-card">
             <h3>Sign In</h3>
-            <input type="email" placeholder="Email address" />
-            <input type="password" placeholder="Password" />
-            <button className="primary-btn">Login</button>
+
+            <input
+              type="email"
+              placeholder="Email address"
+              value={loginEmail}
+              onChange={(e) => setLoginEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={loginPassword}
+              onChange={(e) => setLoginPassword(e.target.value)}
+            />
+            <button className="primary-btn" onClick={handleLogin}>
+              Login
+            </button>
             <p className="toggle-text">
               Don't have an account?{" "}
               <span onClick={openSignUp} className="text-link">
@@ -43,18 +98,63 @@ function FirstPage() {
             </button>
             <div className="modal-header">
               <h2>Join the Network</h2>
-              <p>Create your student freelancer account</p>
+              <p>Create your {userType} account</p>
             </div>
 
             <div className="modal-body">
-              <div className="input-group">
-                <input type="text" placeholder="First Name" />
-                <input type="text" placeholder="Last Name" />
+              <div className="type-toggle">
+                <button
+                  className={`toggle-option ${userType === "student" ? "active" : ""}`}
+                  onClick={() => setUserType("student")}
+                >
+                  Student
+                </button>
+                <button
+                  className={`toggle-option ${userType === "business" ? "active" : ""}`}
+                  onClick={() => setUserType("business")}
+                >
+                  Business
+                </button>
               </div>
-              <input type="email" placeholder="University Email" />
-              <input type="password" placeholder="Password" />
-              <input type="password" placeholder="Confirm Password" />
-              <button className="primary-btn full-width">Create Account</button>
+
+              <div className="input-group">
+                <input
+                  type="text"
+                  placeholder="First Name"
+                  value={regFirstName}
+                  onChange={(e) => setRegFirstName(e.target.value)}
+                />
+                <input
+                  type="text"
+                  placeholder="Last Name"
+                  value={regLastName}
+                  onChange={(e) => setRegLastName(e.target.value)}
+                />
+              </div>
+              <input
+                type="email"
+                placeholder="Email Address"
+                value={regEmail}
+                onChange={(e) => setRegEmail(e.target.value)}
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                value={regPassword}
+                onChange={(e) => setRegPassword(e.target.value)}
+              />
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                value={regConfirmPassword}
+                onChange={(e) => setRegConfirmPassword(e.target.value)}
+              />
+              <button
+                className="primary-btn full-width"
+                onClick={handleRegister}
+              >
+                Create Account
+              </button>
             </div>
           </div>
         </div>

@@ -1,6 +1,12 @@
+import { Navigate } from "react-router-dom";
 import "./user.css";
 
 function UserPage() {
+  const userLogedIn = true;
+
+  if (!userLogedIn) {
+    return <Navigate to="/login" />;
+  }
   return (
     <div className="user-page">
       <h1>User Profile</h1>
