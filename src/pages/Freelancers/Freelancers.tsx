@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import JobPost from "../components/JobPost/JobPost";
-import { get } from "../api/api";
+import JobPost from "../../components/JobPost/JobPost";
+import { get } from "../../api/api";
 // const freelancers = [
 //   {
 //     path: "",

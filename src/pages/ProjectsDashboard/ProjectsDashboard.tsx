@@ -1,4 +1,4 @@
-import JobPost from "../components/JobPost/JobPost";
+import JobPost from "../../components/JobPost/JobPost";
 
 function ProjectsDashboard() {
   return (

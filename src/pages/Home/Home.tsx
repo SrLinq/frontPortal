@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { post } from "../api/api";
+import { post } from "../../api/api";
 import "./Home.css";
 
 function FirstPage() {

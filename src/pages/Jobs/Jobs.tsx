@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // import { useEffect, useState } from "react";
 // import { get } from "../api/api";
-import JobPost from "../components/JobPost/JobPost";
+import JobPost from "../../components/JobPost/JobPost";
 const jobs = [
   {
     id: 1,
