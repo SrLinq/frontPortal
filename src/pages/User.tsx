@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import "./user.css";
+import "./User.css";
 
 function UserPage() {
   const userLogedIn = true;

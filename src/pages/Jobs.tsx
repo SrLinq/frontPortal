@@ -1,20 +1,24 @@
-import { useEffect, useState } from "react";
-import { get } from "../apiFUnctions/apiFunctions";
-import JobPost from "./jobPost";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// import { useEffect, useState } from "react";
+// import { get } from "../api/api";
+import JobPost from "../components/JobPost/JobPost";
 const jobs = [
   {
+    id: 1,
     path: "",
     title: "Job 1",
     description: "Description 1",
     price: 100,
   },
   {
+    id: 2,
     path: "",
     title: "Job 2",
     description: "Description 2",
     price: 200,
   },
   {
+    id: 3,
     path: "",
     title: "Job 3",
     description: "Description 3",
@@ -23,14 +27,14 @@ const jobs = [
 ];
 
 function Job() {
-  const [jobs, setJobs] = useState([]);
+  /*const [jobs, setJobs] = useState([]);
   useEffect(() => {
     const async = async () => {
       const data = await get<any>("jobs");
       setJobs(data.data);
     };
     async();
-  }, []);
+  }, []);*/
   return (
     <div>
       <form
@@ -59,6 +63,7 @@ function Job() {
       {jobs.map((job: any) => (
         <JobPost
           key={job.title}
+          pathTo={`/job/${job.id}`}
           path={job.path}
           title={job.title}
           description={job.description}

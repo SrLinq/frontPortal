@@ -1,31 +1,31 @@
 import { useEffect } from "react";
-import JobPost from "./jobPost";
-import { get } from "../apiFUnctions/apiFunctions";
-const freelancers = [
-  {
-    path: "",
-    title: "Freelancer 1",
-    description: "Description 1",
-    price: 100,
-  },
-  {
-    path: "",
-    title: "Freelancer 2",
-    description: "Description 2",
-    price: 200,
-  },
-  {
-    path: "",
-    title: "Freelancer 3",
-    description: "Description 3",
-    price: 300,
-  },
-];
+import JobPost from "../components/JobPost/JobPost";
+import { get } from "../api/api";
+// const freelancers = [
+//   {
+//     path: "",
+//     title: "Freelancer 1",
+//     description: "Description 1",
+//     price: 100,
+//   },
+//   {
+//     path: "",
+//     title: "Freelancer 2",
+//     description: "Description 2",
+//     price: 200,
+//   },
+//   {
+//     path: "",
+//     title: "Freelancer 3",
+//     description: "Description 3",
+//     price: 300,
+//   },
+// ];
 
 function Freelancers() {
   useEffect(() => {
     const async = async () => {
-      const data = await get("freelancers");
+      await get("freelancers");
     };
     async();
   }, []);
@@ -60,18 +60,21 @@ function Freelancers() {
       </form>
       <h1>Freelancers</h1>
       <JobPost
+        pathTo="/freelancer/1"
         path=""
         title="Freelancer 1"
         description="Description 1"
         price={100}
       />
       <JobPost
+        pathTo="/freelancer/2"
         path=""
         title="Freelancer 2"
         description="Description 2"
         price={200}
       />
       <JobPost
+        pathTo="/freelancer/3"
         path=""
         title="Freelancer 3"
         description="Description 3"

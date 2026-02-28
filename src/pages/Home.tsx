@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { post } from "../apiFUnctions/apiFunctions";
-import "./first.css";
+import { post } from "../api/api";
+import "./Home.css";
 
 function FirstPage() {
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
@@ -18,13 +18,18 @@ function FirstPage() {
   const [regConfirmPassword, setRegConfirmPassword] = useState("");
 
   const handleLogin = async () => {
-    const data = await post("/auth/login", {
+    const data = (await post("/auth/login", {
       email: loginEmail,
       password: loginPassword,
-    });
+    })) as { access_token?: string; token?: string };
+
     if (data) {
       console.log("Login success:", data);
-      // maybe redirect here later
+      localStorage.setItem(
+        "authToken",
+        data.access_token || data.token || "dummy_token",
+      );
+      window.location.href = "/jobs";
     }
   };
 
