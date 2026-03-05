@@ -1,5 +1,6 @@
 // src/api.ts
 import axios from "axios";
+import { useAuthStore } from "../store/authStore";
 // const apiUrl = import.meta.env.VITE_API_URL;
 // Create an Axios instance
 const instance = axios.create({
@@ -8,7 +9,8 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("authToken");
+    // Get token from Zustand store directly
+    const token = useAuthStore.getState().token;
 
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;

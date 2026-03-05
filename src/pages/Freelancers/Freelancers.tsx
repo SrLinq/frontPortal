@@ -1,31 +1,18 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import JobPost from "../../components/JobPost/JobPost";
 import { get } from "../../api/api";
-// const freelancers = [
-//   {
-//     path: "",
-//     title: "Freelancer 1",
-//     description: "Description 1",
-//     price: 100,
-//   },
-//   {
-//     path: "",
-//     title: "Freelancer 2",
-//     description: "Description 2",
-//     price: 200,
-//   },
-//   {
-//     path: "",
-//     title: "Freelancer 3",
-//     description: "Description 3",
-//     price: 300,
-//   },
-// ];
 
 function Freelancers() {
+  const [freelancers, setFreelancers] = useState([]);
+  const [search, setSearch] = useState("");
+  const searchFreelancers = async (search: string) => {
+    const data = await get<any>(`freelancer/search/${search}`);
+    setFreelancers(data.data);
+  };
   useEffect(() => {
     const async = async () => {
-      await get("freelancers");
+      const data = await get<any>("freelancers");
+      setFreelancers(data.data);
     };
     async();
   }, []);
@@ -46,6 +33,11 @@ function Freelancers() {
           type="text"
           placeholder="Search freelancers..."
           style={{ flex: 1 }}
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            searchFreelancers(e.target.value);
+          }}
         />
         <select>
           <option value="">Sort by...</option>
@@ -59,27 +51,22 @@ function Freelancers() {
         </select>
       </form>
       <h1>Freelancers</h1>
-      <JobPost
-        pathTo="/freelancer/1"
-        path=""
-        title="Freelancer 1"
-        description="Description 1"
-        price={100}
-      />
-      <JobPost
-        pathTo="/freelancer/2"
-        path=""
-        title="Freelancer 2"
-        description="Description 2"
-        price={200}
-      />
-      <JobPost
-        pathTo="/freelancer/3"
-        path=""
-        title="Freelancer 3"
-        description="Description 3"
-        price={300}
-      />
+      {freelancers === undefined ? (
+        <p>No freelancers found</p>
+      ) : (
+        <div>
+          {freelancers.map((freelancer: any) => (
+            <JobPost
+              key={freelancer.title}
+              pathTo={`/freelancer/${freelancer.id}`}
+              path={freelancer.path}
+              title={freelancer.title}
+              description={freelancer.description}
+              price={freelancer.price}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

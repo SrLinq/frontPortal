@@ -1,20 +1,32 @@
+import { useAuthStore } from "../../store/authStore";
 import Navigate from "../NavigationButton/NavigationButton";
 import "./Navbar.css";
 
 function Navbar() {
-  const userLogedIn = !!localStorage.getItem("authToken");
+  const { isAuthenticated, user, logout } = useAuthStore();
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    window.location.href = "/";
+    logout();
   };
 
-  if (userLogedIn) {
+  if (isAuthenticated) {
     return (
       <div className="navbar">
-        <Navigate button="Jobs" path="/jobs" />
-        <Navigate button="Freelancers" path="/freelancers" />
-        <Navigate button="Projects" path="/projects" />
+        {user?.role === "student" && (
+          <>
+            <Navigate button="Jobs" path="/jobs" />
+            <Navigate button="Projects" path="/projects" />
+          </>
+        )}
+
+        {user?.role === "business" && (
+          <>
+            <Navigate button="Freelancers" path="/freelancers" />
+            <Navigate button="My Projects" path="/projects" />
+            <Navigate button="Post a Job" path="/post-job" />
+          </>
+        )}
+
         <Navigate button="Profile" path="/user" />
         <div className="logout-btn">
           <button onClick={handleLogout}>Logout</button>

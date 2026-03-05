@@ -1,40 +1,22 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// import { useEffect, useState } from "react";
-// import { get } from "../api/api";
+import { useEffect, useState } from "react";
 import JobPost from "../../components/JobPost/JobPost";
-const jobs = [
-  {
-    id: 1,
-    path: "",
-    title: "Job 1",
-    description: "Description 1",
-    price: 100,
-  },
-  {
-    id: 2,
-    path: "",
-    title: "Job 2",
-    description: "Description 2",
-    price: 200,
-  },
-  {
-    id: 3,
-    path: "",
-    title: "Job 3",
-    description: "Description 3",
-    price: 300,
-  },
-];
+import { get } from "../../api/api";
 
 function Job() {
-  /*const [jobs, setJobs] = useState([]);
+  const [search, setSearch] = useState("");
+  const [jobs, setJobs] = useState([]);
+
+  const searchJobs = async (search: string) => {
+    const data = await get<any>(`job/search/${search}`);
+    setJobs(data.data);
+  };
   useEffect(() => {
     const async = async () => {
-      const data = await get<any>("jobs");
+      const data = await get<any>("job");
       setJobs(data.data);
     };
     async();
-  }, []);*/
+  }, []);
   return (
     <div>
       <form
@@ -47,7 +29,17 @@ function Job() {
         }}
         onSubmit={(e) => e.preventDefault()}
       >
-        <input type="text" placeholder="Search jobs..." style={{ flex: 1 }} />
+        <input
+          type="text"
+          placeholder="Search jobs..."
+          style={{ flex: 1 }}
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            searchJobs(e.target.value);
+          }}
+        />
+
         <select>
           <option value="">Sort by...</option>
           <option value="price_desc">Highest Price</option>
@@ -60,18 +52,23 @@ function Job() {
         </select>
       </form>
       <h1>Jobs</h1>
-      {jobs.map((job: any) => (
-        <JobPost
-          key={job.title}
-          pathTo={`/job/${job.id}`}
-          path={job.path}
-          title={job.title}
-          description={job.description}
-          price={job.price}
-        />
-      ))}
+      {jobs === undefined ? (
+        <p>No jobs found</p>
+      ) : (
+        <div>
+          {jobs.map((job: any) => (
+            <JobPost
+              key={job.title}
+              pathTo={`/job/${job.id}`}
+              path={job.path}
+              title={job.title}
+              description={job.description}
+              price={job.price}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
-
 export default Job;

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { post } from "../../api/api";
+import { post, get } from "../../api/api";
+import { useAuthStore } from "../../store/authStore";
 import "./Home.css";
 
 function FirstPage() {
@@ -16,20 +17,44 @@ function FirstPage() {
   const [regEmail, setRegEmail] = useState("");
   const [regPassword, setRegPassword] = useState("");
   const [regConfirmPassword, setRegConfirmPassword] = useState("");
+  const { login } = useAuthStore();
 
   const handleLogin = async () => {
+    // Cast to expected response type (add userInfo if your backend returns it)
     const data = (await post("/auth/login", {
       email: loginEmail,
       password: loginPassword,
-    })) as { access_token?: string; token?: string };
+    })) as { access_token?: string; token?: string; user?: any };
 
     if (data) {
       console.log("Login success:", data);
-      localStorage.setItem(
-        "authToken",
-        data.access_token || data.token || "dummy_token",
-      );
-      window.location.href = "/jobs";
+      const token = data.access_token || data.token || "dummy_token";
+      let decodedUserId: string | undefined;
+
+      let userData = data.user;
+
+      if (!userData && decodedUserId) {
+        // Temporarily log in to set the token for subsequent requests
+        login({ id: decodedUserId, email: loginEmail }, token);
+
+        try {
+          const fetchedUser = await get(`/users/${decodedUserId}`);
+          if (fetchedUser) {
+            userData = fetchedUser;
+          }
+        } catch (err) {
+          console.error("Failed to fetch user profile", err);
+        }
+      }
+
+      userData = userData || {
+        id: decodedUserId,
+        email: loginEmail,
+        role: "student", // Temp fallback until backend returns it
+      };
+
+      login(userData, token);
+      window.location.href = "/user";
     }
   };
 
