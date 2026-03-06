@@ -1,28 +1,12 @@
 import { create } from "zustand";
 
-interface User {
-  id?: string;
-  email?: string;
-  role?: "student" | "business" | "employer";
-  userInfo?: {
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    role?: "student" | "business" | "employer";
-  };
-  userProfile?: {
-    course?: string;
-    skills?: string[];
-  };
-}
-
 interface AuthState {
-  user: User | null;
+  role: "student" | "business" | null;
   token: string | null;
   isAuthenticated: boolean;
-  login: (user: User, token: string) => void;
+  login: (role: "student" | "business", token: string) => void;
   logout: () => void;
-  setUser: (user: User) => void;
+  setRole: (role: "student" | "business") => void;
 }
 
 // Helper to reliably get token from localStorage on initial load
@@ -33,24 +17,37 @@ const getInitialToken = () => {
   return null;
 };
 
+// Helper to reliably get role from localStorage on initial load
+const getInitialRole = (): "student" | "business" | null => {
+  if (typeof window !== "undefined") {
+    const role = localStorage.getItem("authRole");
+    if (role === "student" || role === "business") {
+      return role;
+    }
+  }
+  return null;
+};
+
 export const useAuthStore = create<AuthState>((set) => ({
-  user: null, // Initially null, we'll fetch details if token exists
+  role: getInitialRole(),
   token: getInitialToken(),
   isAuthenticated: !!getInitialToken(),
 
-  login: (user, token) => {
+  login: (role, token) => {
     localStorage.setItem("authToken", token);
-    set({ user, token, isAuthenticated: true });
+    localStorage.setItem("authRole", role);
+    set({ role, token, isAuthenticated: true });
   },
 
   logout: () => {
     localStorage.removeItem("authToken");
-    set({ user: null, token: null, isAuthenticated: false });
-    // Optional: force clear any cached data or redirect
+    localStorage.removeItem("authRole");
+    set({ role: null, token: null, isAuthenticated: false });
     window.location.href = "/";
   },
 
-  setUser: (user) => {
-    set({ user, isAuthenticated: true });
+  setRole: (role) => {
+    localStorage.setItem("authRole", role);
+    set({ role, isAuthenticated: true });
   },
 }));

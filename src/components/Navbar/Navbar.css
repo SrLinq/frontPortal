@@ -1,6 +1,3 @@
-/* ========================================= */
-/* NAVBAR STYLING                            */
-/* ========================================= */
 #root > div:first-of-type {
   display: flex;
   flex-wrap: wrap;

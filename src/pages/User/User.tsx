@@ -1,9 +1,30 @@
 import { Navigate } from "react-router-dom";
 import "./User.css";
 import { useAuthStore } from "../../store/authStore";
-
+import { useEffect, useState } from "react";
+import { get } from "../../api/api";
+interface user {
+  user: {
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  userProfile: {
+    course: string;
+    skills: string[];
+  };
+}
 function UserPage() {
-  const { user, isAuthenticated } = useAuthStore();
+  const { role, isAuthenticated } = useAuthStore();
+  const [user, setUser] = useState<user | null>(null);
+  useEffect(() => {
+    const async = async () => {
+      const user = await get<any>(`/users`);
+      console.log(user);
+      setUser(user);
+    };
+    async();
+  }, []);
 
   if (!isAuthenticated) {
     return <Navigate to="/" />;
@@ -21,9 +42,9 @@ function UserPage() {
           />
         </div>
         <h2 className="profile-name">
-          {user?.userInfo?.firstName} {user?.userInfo?.lastName}
+          {user?.user?.firstName} {user?.user?.lastName}
         </h2>
-        {user?.userInfo?.role === "student" &&
+        {role === "student" &&
           (user?.userProfile?.course ? (
             <p className="profile-role">{user?.userProfile?.course}</p>
           ) : (
@@ -47,16 +68,33 @@ function UserPage() {
               </button>
             </>
           ))}
-        {user?.userInfo?.role === "employer" && (
-          <p className="profile-role">Employer</p>
+        {role === "business" && (
+          <>
+            <p className="profile-role">Business</p>
+            <button
+              className="add-skill-btn"
+              style={{
+                background: "linear-gradient(45deg, #00f2fe, #4facfe)",
+                border: "none",
+                padding: "8px 16px",
+                borderRadius: "20px",
+                color: "#fff",
+                cursor: "pointer",
+                fontWeight: "bold",
+                fontSize: "0.9rem",
+              }}
+              onClick={() => alert("Add skill functionality coming soon!")}
+            >
+              + Add Company
+            </button>
+          </>
         )}
-        {user?.userInfo?.role === "student" &&
+        {role === "student" &&
           (user?.userProfile?.skills && user.userProfile.skills.length > 0 ? (
             <div className="skills-container">
-              <span className="skill-badge skill-python">Python</span>
-              <span className="skill-badge skill-react">React</span>
-              <span className="skill-badge skill-ux">UX Design</span>
-              <span className="skill-badge skill-figma">Figma</span>
+              {user?.userProfile?.skills.map((skill: string) => (
+                <span className="skill-badge skill-python">{skill}</span>
+              ))}
             </div>
           ) : (
             <div className="skills-container">
@@ -96,12 +134,12 @@ function UserPage() {
           <div className="info-item">
             <label>Name</label>
             <p>
-              {user?.userInfo?.firstName} {user?.userInfo?.lastName}
+              {user?.user?.firstName} {user?.user?.lastName}
             </p>
           </div>
           <div className="info-item">
             <label>Email</label>
-            <p>{user?.userInfo?.email}</p>
+            <p>{user?.user?.email}</p>
           </div>
           <div className="info-item">
             <label>Phone</label>

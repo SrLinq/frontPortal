@@ -3,7 +3,7 @@ import Navigate from "../NavigationButton/NavigationButton";
 import "./Navbar.css";
 
 function Navbar() {
-  const { isAuthenticated, user, logout } = useAuthStore();
+  const { isAuthenticated, role, logout } = useAuthStore();
 
   const handleLogout = () => {
     logout();
@@ -12,14 +12,14 @@ function Navbar() {
   if (isAuthenticated) {
     return (
       <div className="navbar">
-        {user?.role === "student" && (
+        {role === "student" && (
           <>
             <Navigate button="Jobs" path="/jobs" />
             <Navigate button="Projects" path="/projects" />
           </>
         )}
 
-        {user?.role === "business" && (
+        {role === "business" && (
           <>
             <Navigate button="Freelancers" path="/freelancers" />
             <Navigate button="My Projects" path="/projects" />

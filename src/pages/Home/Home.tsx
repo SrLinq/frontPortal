@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { post, get } from "../../api/api";
+import { post } from "../../api/api";
 import { useAuthStore } from "../../store/authStore";
 import "./Home.css";
-
+interface login {
+  access_token: string;
+  role: "student" | "business";
+}
 function FirstPage() {
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
   const [userType, setUserType] = useState<"student" | "business">("student");
@@ -21,39 +24,16 @@ function FirstPage() {
 
   const handleLogin = async () => {
     // Cast to expected response type (add userInfo if your backend returns it)
-    const data = (await post("/auth/login", {
+    const data = await post<login>("/auth/login", {
       email: loginEmail,
       password: loginPassword,
-    })) as { access_token?: string; token?: string; user?: any };
+    });
 
     if (data) {
       console.log("Login success:", data);
-      const token = data.access_token || data.token || "dummy_token";
-      let decodedUserId: string | undefined;
-
-      let userData = data.user;
-
-      if (!userData && decodedUserId) {
-        // Temporarily log in to set the token for subsequent requests
-        login({ id: decodedUserId, email: loginEmail }, token);
-
-        try {
-          const fetchedUser = await get(`/users/${decodedUserId}`);
-          if (fetchedUser) {
-            userData = fetchedUser;
-          }
-        } catch (err) {
-          console.error("Failed to fetch user profile", err);
-        }
-      }
-
-      userData = userData || {
-        id: decodedUserId,
-        email: loginEmail,
-        role: "student", // Temp fallback until backend returns it
-      };
-
-      login(userData, token);
+      const token = data.access_token;
+      const userRole = data.role;
+      login(userRole, token);
       window.location.href = "/user";
     }
   };
@@ -63,16 +43,20 @@ function FirstPage() {
       alert("Passwords do not match");
       return;
     }
-    const data = await post("/auth/register", {
+    const data = await post<login>("/auth/register", {
       email: regEmail,
       password: regPassword,
       role: userType,
       firstName: regFirstName,
       lastName: regLastName,
     });
+
     if (data) {
-      console.log("Register success:", data);
-      closeSignUp();
+      console.log("Login success:", data);
+      const token = data.access_token;
+      const userRole = data.role;
+      login(userRole, token);
+      window.location.href = "/user";
     }
   };
 

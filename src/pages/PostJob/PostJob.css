@@ -1,0 +1,134 @@
+.post-job-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.post-job-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.post-job-header h1 {
+  font-size: 2.5rem;
+  color: #fff;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.post-job-header p {
+  color: #a0aec0;
+  font-size: 1.1rem;
+}
+
+.post-job-form-wrapper {
+  background: rgba(15, 12, 30, 0.6);
+  border-radius: 16px;
+  padding: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+.post-job-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-row {
+  display: flex;
+  gap: 24px;
+}
+
+.half-width {
+  flex: 1;
+}
+
+.post-job-container label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.post-job-container input,
+.post-job-container select,
+.post-job-container textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  background-color: rgba(15, 12, 30, 0.6);
+  color: #fff;
+}
+
+.post-job-container input:focus,
+.post-job-container select:focus,
+.post-job-container textarea:focus {
+  outline: none;
+  border-color: #00f2fe;
+  background-color: rgba(15, 12, 30, 0.8);
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+}
+
+.post-job-container select option {
+  background: #0f0c1e;
+  color: #fff;
+}
+
+.post-job-container textarea {
+  resize: vertical;
+}
+
+.submit-job-btn {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: white;
+  border: none;
+  padding: 16px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-top: 10px;
+}
+
+.submit-job-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+}
+
+.submit-job-btn:active {
+  transform: translateY(0);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .post-job-form-wrapper {
+    padding: 24px;
+  }
+}
