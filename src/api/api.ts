@@ -35,6 +35,16 @@ export async function put<T>(url: string, body?: unknown): Promise<T | null> {
   }
 }
 
+export async function patch<T>(url: string, body?: unknown): Promise<T | null> {
+  try {
+    const response = await instance.patch(url, body);
+    return response.data;
+  } catch (err) {
+    console.error("Failed to fetch products:", err);
+    return null;
+  }
+}
+
 export async function del<T>(url: string): Promise<T | null> {
   try {
     // You only need to provide the endpoint, not the full URL

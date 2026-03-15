@@ -10,6 +10,7 @@ import Freelancers from "./pages/Freelancers/Freelancers";
 import Navbar from "./components/Navbar/Navbar";
 import JobPage from "./pages/Jobs/JobDetails";
 import PostJob from "./pages/PostJob/PostJob";
+import FreelancerPage from "./pages/Freelancers/FreelancerDetails";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -23,6 +24,7 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/job/:jobId" element={<JobPage />} />
         <Route path="/projects" element={<ProjectsDashboard />} />
         <Route path="/post-job" element={<PostJob />} />
+        <Route path="/freelancer/:freelancerId" element={<FreelancerPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

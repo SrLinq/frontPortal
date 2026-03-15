@@ -1,19 +1,26 @@
 import { useEffect, useState } from "react";
 import JobPost from "../../components/JobPost/JobPost";
 import { get } from "../../api/api";
+import { useAuthStore } from "../../store/authStore";
 
 function Job() {
+  const { role } = useAuthStore();
+
+  if (role === "business") {
+    window.location.href = "/";
+  }
+
   const [search, setSearch] = useState("");
   const [jobs, setJobs] = useState([]);
 
   const searchJobs = async (search: string) => {
     const data = await get<any>(`job/search/${search}`);
-    setJobs(data.data);
+    setJobs(data || []);
   };
   useEffect(() => {
     const async = async () => {
       const data = await get<any>("job");
-      setJobs(data.data);
+      setJobs(data || []);
     };
     async();
   }, []);
@@ -55,18 +62,18 @@ function Job() {
       {jobs === undefined ? (
         <p>No jobs found</p>
       ) : (
-        <div>
+        <>
           {jobs.map((job: any) => (
             <JobPost
-              key={job.title}
-              pathTo={`/job/${job.id}`}
+              key={job._id}
+              pathTo={`/job/${job._id}`}
               path={job.path}
               title={job.title}
               description={job.description}
-              price={job.price}
+              price={job.budget}
             />
           ))}
-        </div>
+        </>
       )}
     </div>
   );

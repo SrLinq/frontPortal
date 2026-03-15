@@ -1,25 +1,59 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./PostJob.css";
+import { useAuthStore } from "../../store/authStore";
+import { get, post } from "../../api/api";
+import JobPost from "../../components/JobPost/JobPost";
 
 function PostJob() {
+  const { isAuthenticated, role } = useAuthStore();
+
+  if (!isAuthenticated || role !== "business") {
+    window.location.href = "/";
+  }
+  const [myJobs, setMyJobs] = useState([]);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     price: "",
     type: "fixed", // or hourly
   });
+  useEffect(() => {
+    const async = async () => {
+      const data = await get<any>("/job/my-jobs");
+      setMyJobs(data);
+    };
+    async();
+  }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate job posting
-    console.log("Job posted:", formData);
-    alert("Job posted successfully!");
-    setFormData({ title: "", description: "", price: "", type: "fixed" });
+    const payload = {
+      title: formData.title,
+      description: formData.description,
+      budget: Number(formData.price),
+      type: formData.type,
+    };
+    const res = await post("/job", payload);
+    if (res) {
+      alert("Job posted successfully!");
+      setFormData({ title: "", description: "", price: "", type: "fixed" });
+      navigate("/jobs");
+    } else {
+      alert("Failed to post job");
+    }
   };
 
   return (
@@ -89,6 +123,18 @@ function PostJob() {
             Publish Job Posting
           </button>
         </form>
+      </div>
+      <div>
+        {myJobs.map((job: any) => (
+          <JobPost
+            key={job._id}
+            pathTo={`/job/${job._id}`}
+            path={job.path}
+            title={job.title}
+            description={job.description}
+            price={job.budget}
+          />
+        ))}
       </div>
     </div>
   );

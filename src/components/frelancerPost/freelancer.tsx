@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import "./JobPost.css";
+import "../jobPost/JobPost.css";
 
 type jobPost = {
   path: string;
@@ -7,9 +7,17 @@ type jobPost = {
   description: string;
   price: number;
   pathTo: string;
+  course: string;
 };
 
-function JobPost({ pathTo, path, title, description, price }: jobPost) {
+function Freelancer({
+  pathTo,
+  path,
+  title,
+  description,
+  price,
+  course,
+}: jobPost) {
   return (
     <div className="post-card">
       <Link to={pathTo}>
@@ -17,9 +25,10 @@ function JobPost({ pathTo, path, title, description, price }: jobPost) {
         <h1>{title}</h1>
         <p>{description}</p>
         <p>{price}</p>
+        <p>{course}</p>
       </Link>
     </div>
   );
 }
 
-export default JobPost;
+export default Freelancer;

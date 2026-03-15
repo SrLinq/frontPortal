@@ -7,6 +7,10 @@ interface login {
   role: "student" | "business";
 }
 function FirstPage() {
+  const { isAuthenticated } = useAuthStore();
+  if (isAuthenticated) {
+    window.location.href = "/user";
+  }
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
   const [userType, setUserType] = useState<"student" | "business">("student");
 

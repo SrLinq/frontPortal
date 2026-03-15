@@ -9,15 +9,21 @@ function FreelancersPage() {
   useEffect(() => {
     const async = async () => {
       const data = await get<any>(`freelancers/${freelancerId}`);
-      setFreelancer(data.data);
+      console.log(data);
+      setFreelancer(data);
     };
     async();
-  }, []);
+  }, [freelancerId]);
+
   return (
     <div>
-      <h1>{freelancer.name}</h1>
-      <p>{freelancer.description}</p>
-      <p>{freelancer.price}</p>
+      <h1>
+        {freelancer?.user_id?.firstName} {freelancer?.user_id?.lastName}
+      </h1>
+      <p>{freelancer?.description}</p>
+      <p>{freelancer?.university}</p>
+      <p>{freelancer?.course}</p>
+      <p>{freelancer?.skills}</p>
     </div>
   );
 }

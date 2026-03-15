@@ -1,4 +1,4 @@
-#root > div:nth-of-type(2) > div {
+.post-card {
   background: rgba(22, 18, 45, 0.6);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -14,7 +14,7 @@
 }
 
 /* Gradient Borders effect via pseudo-element */
-#root > div:nth-of-type(2) > div::before {
+.post-card::before {
   content: "";
   position: absolute;
   top: 0;
@@ -42,7 +42,7 @@
   transition: opacity 0.4s ease;
 }
 
-#root > div:nth-of-type(2) > div:hover {
+.post-card:hover {
   transform: translateY(-8px);
   background: rgba(28, 22, 55, 0.8);
   box-shadow:
@@ -50,13 +50,13 @@
     0 0 30px rgba(0, 242, 254, 0.15);
 }
 
-#root > div:nth-of-type(2) > div:hover::before {
+.post-card:hover::before {
   opacity: 1;
   background: linear-gradient(135deg, #00f2fe, #f093fb, #f5576c);
 }
 
 /* Card Image (e.g. Profile Avatar or Job Image) */
-#root > div:nth-of-type(2) > div img {
+.post-card img {
   width: 70px;
   height: 70px;
   border-radius: 20px;
@@ -73,7 +73,7 @@
     box-shadow 0.4s ease;
 }
 
-#root > div:nth-of-type(2) > div:hover img {
+.post-card:hover img {
   transform: scale(1.05) rotate(-3deg);
   box-shadow:
     0 8px 20px rgba(0, 0, 0, 0.4),
@@ -82,7 +82,7 @@
 }
 
 /* Card Title */
-#root > div:nth-of-type(2) > div h1 {
+.post-card h1 {
   font-size: 1.35rem;
   font-weight: 600;
   margin: 0 0 0.8rem 0;
@@ -91,7 +91,7 @@
 }
 
 /* Card Description text */
-#root > div:nth-of-type(2) > div p {
+.post-card p {
   color: #94a3b8;
   font-size: 0.95rem;
   margin: 0 0 1.5rem 0;
@@ -99,7 +99,7 @@
 }
 
 /* Card Price/Badge (The last p element) */
-#root > div:nth-of-type(2) > div p:last-of-type {
+.post-card p:last-of-type {
   margin: auto 0 0 0;
   display: inline-flex;
   align-items: center;
@@ -116,7 +116,7 @@
   transition: all 0.3s ease;
 }
 
-#root > div:nth-of-type(2) > div:hover p:last-of-type {
+.post-card:hover p:last-of-type {
   background: rgba(240, 147, 251, 0.2);
   border-color: rgba(240, 147, 251, 0.6);
   box-shadow:

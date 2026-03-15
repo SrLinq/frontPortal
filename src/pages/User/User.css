@@ -73,6 +73,33 @@
   gap: 0.8rem;
   justify-content: center;
   width: 100%;
+  margin-top: 1rem;
+}
+
+.profile-action-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+  flex-wrap: wrap; /* allow wrapping if too tight */
+}
+
+.add-action-btn {
+  background: linear-gradient(45deg, #00f2fe, #4facfe);
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: opacity 0.3s ease, transform 0.2s ease;
+}
+
+.add-action-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
 }
 
 .skill-badge {

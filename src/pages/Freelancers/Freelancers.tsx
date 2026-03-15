@@ -1,18 +1,31 @@
 import { useEffect, useState } from "react";
-import JobPost from "../../components/JobPost/JobPost";
 import { get } from "../../api/api";
+import { useAuthStore } from "../../store/authStore";
+import Freelancer from "../../components/frelancerPost/freelancer";
 
 function Freelancers() {
-  const [freelancers, setFreelancers] = useState([]);
+  const { isAuthenticated } = useAuthStore();
+  if (!isAuthenticated) {
+    window.location.href = "/";
+  }
+
+  const [freelancers, setFreelancers] = useState<any[]>([]);
   const [search, setSearch] = useState("");
+
   const searchFreelancers = async (search: string) => {
-    const data = await get<any>(`freelancer/search/${search}`);
-    setFreelancers(data.data);
+    if (!search) {
+      const data = await get<any>("freelancers");
+      setFreelancers(data || []);
+      return;
+    }
+    const data = await get<any>(`freelancers/search/${search}`);
+    setFreelancers(data || []);
   };
+
   useEffect(() => {
     const async = async () => {
       const data = await get<any>("freelancers");
-      setFreelancers(data.data);
+      setFreelancers(data || []);
     };
     async();
   }, []);
@@ -51,21 +64,25 @@ function Freelancers() {
         </select>
       </form>
       <h1>Freelancers</h1>
-      {freelancers === undefined ? (
+      {freelancers.length === 0 ? (
         <p>No freelancers found</p>
       ) : (
-        <div>
+        <>
           {freelancers.map((freelancer: any) => (
-            <JobPost
-              key={freelancer.title}
-              pathTo={`/freelancer/${freelancer.id}`}
-              path={freelancer.path}
-              title={freelancer.title}
-              description={freelancer.description}
-              price={freelancer.price}
+            <Freelancer
+              key={freelancer._id}
+              pathTo={`/freelancer/${freelancer._id}`}
+              path={
+                freelancer.avatar ||
+                `https://ui-avatars.com/api/?name=${freelancer.user_id?.firstName}+${freelancer.user_id?.lastName}&background=1b1a3a&color=00f2fe`
+              }
+              title={`${freelancer.user_id?.firstName} ${freelancer.user_id?.lastName}`}
+              description={freelancer.course || "Student"}
+              price={freelancer.university || "Not specified"}
+              course={freelancer.course || "Not specified"}
             />
           ))}
-        </div>
+        </>
       )}
     </div>
   );
