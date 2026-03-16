@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import "../jobPost/JobPost.css";
+import "../JobPost/JobPost.css";
 
 type jobPost = {
   path: string;
