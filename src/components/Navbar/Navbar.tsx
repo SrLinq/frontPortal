@@ -21,6 +21,7 @@ function Navbar() {
 
         {role === "business" && (
           <>
+            <Navigate button="Jobs" path="/jobs" />
             <Navigate button="Freelancers" path="/freelancers" />
             <Navigate button="My Projects" path="/projects" />
             <Navigate button="Post a Job" path="/post-job" />

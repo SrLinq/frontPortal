@@ -32,6 +32,7 @@ function UserPage() {
   useEffect(() => {
     const async = async () => {
       const userData = await get<any>(`/users`);
+      console.log(userData);
       setUser(userData);
       if (userData) {
         setEditForm({
@@ -39,6 +40,7 @@ function UserPage() {
           lastName: userData.user?.lastName || "",
           university: userData.userProfile?.university || "",
           course: userData.userProfile?.course || "",
+          portfolio_link: userData.userProfile?.portfolio_link?.join(", ") || "",
           company_name: userData.userProfile?.company_name || "",
           company_description: userData.userProfile?.company_description || "",
         });
@@ -86,6 +88,7 @@ function UserPage() {
       updateProfileData = {
         university: editForm.university,
         course: editForm.course,
+        portfolio_link: editForm.portfolio_link ? editForm.portfolio_link.split(",").map((l: string) => l.trim()).filter((l: string) => l !== "") : [],
       };
     } else {
       updateProfileData = {
@@ -189,31 +192,31 @@ function UserPage() {
           {role === "business" && (
             <button
               className="add-action-btn"
-              onClick={() => alert("Add skill functionality coming soon!")}
+              onClick={() => setIsEditingProfile(true)}
             >
               + Add Company Info
             </button>
           )}
         </div>
-        
-        <SkillsModal 
-          isOpen={isEditing && role === "student"} 
-          onClose={() => setIsEditing(false)} 
+
+        <SkillsModal
+          isOpen={isEditing && role === "student"}
+          onClose={() => setIsEditing(false)}
           existingSkills={user?.userProfile?.skills || []}
           onAdd={async (newSkill) => {
             const currentSkills = user?.userProfile?.skills || [];
             const updatedSkills = [...currentSkills, newSkill];
-            
+
             await patch("/users/profile", { skills: updatedSkills });
-            
+
             setUser((prev: any) => ({
               ...prev,
               userProfile: {
                 ...prev.userProfile,
-                skills: updatedSkills
-              }
+                skills: updatedSkills,
+              },
             }));
-            
+
             setIsEditing(false);
           }}
         />
@@ -347,6 +350,36 @@ function UserPage() {
                   />
                 ) : (
                   <p>{user?.userProfile?.course || "Not provided"}</p>
+                )}
+              </div>
+              <div className="info-item">
+                <label>Portfolio Links</label>
+                {isEditingProfile ? (
+                  <input
+                    name="portfolio_link"
+                    value={editForm.portfolio_link || ""}
+                    onChange={handeEditChange}
+                    placeholder="https://github.com/..., https://linkedin.com/..."
+                    style={{
+                      width: "100%",
+                      padding: "5px",
+                      background: "#1a1a2e",
+                      border: "1px solid #333",
+                      color: "white",
+                      borderRadius: "4px",
+                    }}
+                  />
+                ) : (
+                  <p>
+                    {user?.userProfile?.portfolio_link && user.userProfile.portfolio_link.length > 0 
+                      ? user.userProfile.portfolio_link.map((link: string, i: number) => (
+                          <span key={i}>
+                            <a href={link} target="_blank" rel="noreferrer" style={{color: "#00f2fe"}}>{link}</a>
+                            {i < user.userProfile!.portfolio_link!.length - 1 ? ", " : ""}
+                          </span>
+                        ))
+                      : "Not provided"}
+                  </p>
                 )}
               </div>
             </>

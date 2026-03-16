@@ -6,32 +6,70 @@ import { useAuthStore } from "../../store/authStore";
 function Job() {
   const { role } = useAuthStore();
 
-  if (role === "business") {
-    window.location.href = "/";
-  }
-
   const [search, setSearch] = useState("");
   const [jobs, setJobs] = useState([]);
+  const [sortBy, setSortBy] = useState("");
+  const [filterBy, setFilterBy] = useState("");
 
   const searchJobs = async (search: string) => {
     const data = await get<any>(`job/search/${search}`);
     setJobs(data || []);
   };
+
   useEffect(() => {
-    const async = async () => {
+    const fetchData = async () => {
       const data = await get<any>("job");
       setJobs(data || []);
     };
-    async();
+    fetchData();
   }, []);
+
+  const filteredJobs = jobs
+    .filter((job: any) => {
+      if (!filterBy) return true;
+      if (filterBy === "fixed") return job.type === "fixed";
+      if (filterBy === "hourly") return job.type === "hourly";
+      return true;
+    })
+    .sort((a: any, b: any) => {
+      if (sortBy === "price_desc") return b.budget - a.budget;
+      if (sortBy === "price_asc") return a.budget - b.budget;
+      return 0;
+    });
+
   return (
-    <div>
+    <div style={{ display: "block", padding: "20px", width: "100%" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px",
+        }}
+      >
+        <h1>Jobs</h1>
+        {role === "business" && (
+          <button
+            onClick={() => (window.location.href = "/post-job")}
+            style={{
+              padding: "10px 20px",
+              background: "#00f2fe",
+              color: "#fff",
+              border: "none",
+              borderRadius: "5px",
+              fontWeight: "bold",
+              cursor: "pointer",
+            }}
+          >
+            + Post a New Job
+          </button>
+        )}
+      </div>
       <form
         style={{
           display: "flex",
           gap: "10px",
           marginBottom: "20px",
-          gridColumn: "1 / -1",
           alignItems: "center",
         }}
         onSubmit={(e) => e.preventDefault()}
@@ -39,7 +77,7 @@ function Job() {
         <input
           type="text"
           placeholder="Search jobs..."
-          style={{ flex: 1 }}
+          style={{ flex: 1, padding: "10px", borderRadius: "5px", border: "1px solid #333", background: "#1a1a2e", color: "#fff" }}
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -47,23 +85,30 @@ function Job() {
           }}
         />
 
-        <select>
+        <select 
+          value={sortBy} 
+          onChange={(e) => setSortBy(e.target.value)}
+          style={{ padding: "10px", borderRadius: "5px", border: "1px solid #333", background: "#1a1a2e", color: "#fff" }}
+        >
           <option value="">Sort by...</option>
           <option value="price_desc">Highest Price</option>
           <option value="price_asc">Lowest Price</option>
         </select>
-        <select>
-          <option value="">Filter by...</option>
-          <option value="full_time">Full Time</option>
-          <option value="part_time">Part Time</option>
+        <select 
+          value={filterBy} 
+          onChange={(e) => setFilterBy(e.target.value)}
+          style={{ padding: "10px", borderRadius: "5px", border: "1px solid #333", background: "#1a1a2e", color: "#fff" }}
+        >
+          <option value="">Filter by Type...</option>
+          <option value="fixed">Fixed Price</option>
+          <option value="hourly">Hourly Rate</option>
         </select>
       </form>
-      <h1>Jobs</h1>
-      {jobs === undefined ? (
+      {filteredJobs.length === 0 ? (
         <p>No jobs found</p>
       ) : (
-        <>
-          {jobs.map((job: any) => (
+        <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+          {filteredJobs.map((job: any) => (
             <JobPost
               key={job._id}
               pathTo={`/job/${job._id}`}
@@ -73,9 +118,10 @@ function Job() {
               price={job.budget}
             />
           ))}
-        </>
+        </div>
       )}
     </div>
   );
 }
+
 export default Job;
