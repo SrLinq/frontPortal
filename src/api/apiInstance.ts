@@ -4,7 +4,7 @@ import { useAuthStore } from "../store/authStore";
 // const apiUrl = import.meta.env.VITE_API_URL;
 // Create an Axios instance
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000",
+  baseURL: import.meta.env.BACK_END || "http://localhost:3000",
 });
 
 instance.interceptors.request.use(
