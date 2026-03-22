@@ -68,18 +68,35 @@ function ProjectsDashboard() {
 
   return (
     <div className="projects-dashboard-container">
+      <div className="dashboard-header" style={{ marginBottom: '30px' }}>
+        <h1 style={{ margin: 0, fontSize: '2.5rem' }}>
+          Welcome back, <span style={{ color: '#00f2fe' }}>{role === 'business' ? 'Partner' : 'Freelancer'}</span>
+        </h1>
+        <p style={{ opacity: 0.7, marginTop: '5px' }}>
+          Here's what's happening with your projects today.
+        </p>
+      </div>
+
       <div className="projects-stats-row">
-        <div className="stat-card">
-          <h3>Active Contracts</h3>
+        <div className="stat-card" style={{ background: 'linear-gradient(135deg, rgba(0, 242, 254, 0.1), rgba(79, 172, 254, 0.1))' }}>
+          <h3 style={{ color: '#00f2fe' }}>Active</h3>
           <span className="stat-value">{activeContractsCount}</span>
         </div>
-        <div className="stat-card">
-          <h3>Completed Contracts</h3>
+        <div className="stat-card" style={{ background: 'linear-gradient(135deg, rgba(240, 147, 251, 0.1), rgba(245, 87, 108, 0.1))' }}>
+          <h3 style={{ color: '#f093fb' }}>Completed</h3>
           <span className="stat-value">{completedContractsCount}</span>
         </div>
-        <div className="stat-card">
-          <h3>Total Contracts</h3>
-          <span className="stat-value">{contracts.length}</span>
+        <div className="stat-card" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02))' }}>
+          <h3 style={{ opacity: 0.8 }}>Total Earnings</h3>
+          <span className="stat-value">
+            ${contracts.reduce((acc, curr) => acc + (curr.proposal_id?.bid_amount || 0), 0)}
+          </span>
+        </div>
+        <div className="stat-card" style={{ background: 'linear-gradient(135deg, rgba(0, 242, 254, 0.05), rgba(255, 255, 255, 0.02))' }}>
+          <h3 style={{ opacity: 0.8 }}>Pending Reviews</h3>
+          <span className="stat-value">
+            {contracts.filter(c => c.payment_status === 'completed' && (role === 'business' ? !c.student_rating : !c.business_rating)).length}
+          </span>
         </div>
       </div>
 

@@ -27,27 +27,41 @@ function UserPage() {
   const [editForm, setEditForm] = useState<any>({});
   const { role, isAuthenticated } = useAuthStore();
   const [user, setUser] = useState<user | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const async = async () => {
-      const userData = await get<any>(`/users`);
-      console.log(userData);
-      setUser(userData);
-      if (userData) {
-        setEditForm({
-          firstName: userData.user?.firstName || "",
-          lastName: userData.user?.lastName || "",
-          university: userData.userProfile?.university || "",
-          course: userData.userProfile?.course || "",
-          portfolio_link: userData.userProfile?.portfolio_link?.join(", ") || "",
-          company_name: userData.userProfile?.company_name || "",
-          company_description: userData.userProfile?.company_description || "",
-        });
+    const fetchData = async () => {
+      try {
+        const userData = await get<any>(`/users`);
+        setUser(userData);
+        if (userData) {
+          setEditForm({
+            firstName: userData.user?.firstName || "",
+            lastName: userData.user?.lastName || "",
+            university: userData.userProfile?.university || "",
+            course: userData.userProfile?.course || "",
+            portfolio_link:
+              userData.userProfile?.portfolio_link?.join(", ") || "",
+            company_name: userData.userProfile?.company_name || "",
+            company_description: userData.userProfile?.company_description || "",
+          });
+        }
+      } catch (error) {
+        showNotification("Failed to fetch profile data", "error");
+      } finally {
+        setIsLoading(false);
       }
     };
-    async();
+    fetchData();
   }, []);
+
+  const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
 
   const handleAvatarUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -55,24 +69,32 @@ function UserPage() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
 
-    const uploadRes = await post<any>("/minio/upload/avatars", formData);
-    if (uploadRes && uploadRes.url) {
-      const backendUrl = "http://localhost:3000"; // Assuming backend is on port 3000
-      const fullUrl = backendUrl + uploadRes.url;
-      const updateData =
-        role === "student" ? { avatar: fullUrl } : { company_logo: fullUrl };
-      await patch("/users/profile", updateData);
+      const uploadRes = await post<any>("/minio/upload/avatars", formData);
+      if (uploadRes && uploadRes.url) {
+        const backendUrl = "http://89.167.66.23:9000";
+        const fullUrl = backendUrl + uploadRes.url;
+        const updateData =
+          role === "student" ? { avatar: fullUrl } : { company_logo: fullUrl };
+        await patch("/users/profile", updateData);
 
-      setUser((prev: any) => ({
-        ...prev,
-        userProfile: {
-          ...prev.userProfile,
-          ...updateData,
-        },
-      }));
+        setUser((prev: any) => ({
+          ...prev,
+          userProfile: {
+            ...prev.userProfile,
+            ...updateData,
+          },
+        }));
+        showNotification("Avatar updated successfully!");
+      }
+    } catch (error) {
+      showNotification("Failed to upload avatar", "error");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -83,44 +105,97 @@ function UserPage() {
   };
 
   const handleSaveProfile = async () => {
-    let updateProfileData: any = {};
-    if (role === "student") {
-      updateProfileData = {
-        university: editForm.university,
-        course: editForm.course,
-        portfolio_link: editForm.portfolio_link ? editForm.portfolio_link.split(",").map((l: string) => l.trim()).filter((l: string) => l !== "") : [],
-      };
-    } else {
-      updateProfileData = {
-        company_name: editForm.company_name,
-        company_description: editForm.company_description,
-      };
+    try {
+      let updateProfileData: any = {};
+      if (role === "student") {
+        updateProfileData = {
+          university: editForm.university,
+          course: editForm.course,
+          portfolio_link: editForm.portfolio_link
+            ? editForm.portfolio_link
+                .split(",")
+                .map((l: string) => l.trim())
+                .filter((l: string) => l !== "")
+            : [],
+        };
+      } else {
+        updateProfileData = {
+          company_name: editForm.company_name,
+          company_description: editForm.company_description,
+        };
+      }
+
+      await patch("/users/profile", updateProfileData);
+
+      setUser((prev: any) => ({
+        ...prev,
+        user: {
+          ...prev.user,
+          firstName: editForm.firstName,
+          lastName: editForm.lastName,
+        },
+        userProfile: {
+          ...prev.userProfile,
+          ...updateProfileData,
+        },
+      }));
+
+      setIsEditingProfile(false);
+      showNotification("Profile saved successfully!");
+    } catch (error) {
+      showNotification("Failed to save profile", "error");
     }
-
-    await patch("/users/profile", updateProfileData);
-
-    setUser((prev: any) => ({
-      ...prev,
-      user: {
-        ...prev.user,
-        firstName: editForm.firstName,
-        lastName: editForm.lastName,
-      },
-      userProfile: {
-        ...prev.userProfile,
-        ...updateProfileData,
-      },
-    }));
-
-    setIsEditingProfile(false);
   };
 
   if (!isAuthenticated) {
     return <Navigate to="/" />;
   }
 
+  if (isLoading) {
+    return (
+      <div className="user-page">
+        <h1 className="skeleton skeleton-text" style={{ width: '200px' }}></h1>
+        <div className="profile-sidebar user-card">
+          <div className="avatar-glow-container skeleton-avatar skeleton"></div>
+          <div className="skeleton skeleton-text" style={{ width: '150px', margin: '20px auto' }}></div>
+          <div className="skeleton skeleton-text" style={{ width: '100px', margin: '10px auto' }}></div>
+          <div className="skills-container">
+            {[1, 2, 3].map(i => <div key={i} className="skeleton" style={{ width: '60px', height: '25px', borderRadius: '20px' }}></div>)}
+          </div>
+        </div>
+        <div className="profile-main user-card">
+          <div className="skeleton skeleton-text" style={{ width: '200px', marginBottom: '30px' }}></div>
+          <div className="info-grid">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="info-item">
+                <div className="skeleton skeleton-text" style={{ width: '50px' }}></div>
+                <div className="skeleton skeleton-text"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="user-page">
+      {notification && (
+        <div className={`notification ${notification.type}`} style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          padding: '10px 20px',
+          borderRadius: '8px',
+          background: notification.type === 'success' ? '#00f2fe' : '#f5576c',
+          color: '#fff',
+          zIndex: 1000,
+          boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+          animation: 'slideIn 0.3s ease-out'
+        }}>
+          {notification.message}
+        </div>
+      )}
       <h1>User Profile</h1>
 
       <div className="profile-sidebar user-card">
@@ -129,14 +204,21 @@ function UserPage() {
           onClick={() => fileInputRef.current?.click()}
           style={{ cursor: "pointer" }}
         >
-          <img
-            src={
-              user?.userProfile?.avatar ||
-              user?.userProfile?.company_logo ||
-              `https://ui-avatars.com/api/?name=${user?.user?.firstName}+${user?.user?.lastName}&background=1b1a3a&color=00f2fe&size=150`
-            }
-            alt="Avatar"
-          />
+          {isUploading && (
+            <div className="uploading-spinner">
+              <div className="spinner"></div>
+            </div>
+          )}
+          {user?.userProfile?.avatar || user?.userProfile?.company_logo ? (
+            <img
+              src={user?.userProfile?.avatar || user?.userProfile?.company_logo}
+              alt="Avatar"
+            />
+          ) : (
+            <div className="avatar-placeholder">
+              {user?.user?.firstName?.[0]}{user?.user?.lastName?.[0]}
+            </div>
+          )}
           <input
             type="file"
             ref={fileInputRef}
@@ -161,7 +243,7 @@ function UserPage() {
           <div className="skills-container">
             {user?.userProfile?.skills && user.userProfile.skills.length > 0 ? (
               user.userProfile.skills.map((skill: string, index: number) => (
-                <span key={index} className="skill-badge skill-python">
+                <span key={index} className="skill-badge">
                   {skill}
                 </span>
               ))
@@ -205,17 +287,22 @@ function UserPage() {
           existingSkills={user?.userProfile?.skills || []}
           onAdd={async (newSkill) => {
             const currentSkills = user?.userProfile?.skills || [];
+            if (currentSkills.includes(newSkill)) return;
             const updatedSkills = [...currentSkills, newSkill];
 
-            await patch("/users/profile", { skills: updatedSkills });
-
-            setUser((prev: any) => ({
-              ...prev,
-              userProfile: {
-                ...prev.userProfile,
-                skills: updatedSkills,
-              },
-            }));
+            try {
+              await patch("/users/profile", { skills: updatedSkills });
+              setUser((prev: any) => ({
+                ...prev,
+                userProfile: {
+                  ...prev.userProfile,
+                  skills: updatedSkills,
+                },
+              }));
+              showNotification("Skill added!");
+            } catch (error) {
+              showNotification("Failed to add skill", "error");
+            }
 
             setIsEditing(false);
           }}
@@ -234,15 +321,8 @@ function UserPage() {
           {isEditingProfile ? (
             <button
               onClick={handleSaveProfile}
-              style={{
-                padding: "8px 16px",
-                background: "#00f2fe",
-                border: "none",
-                color: "#fff",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontWeight: "bold",
-              }}
+              className="add-action-btn"
+              style={{ borderRadius: '4px' }}
             >
               Save Changes
             </button>
@@ -272,14 +352,7 @@ function UserPage() {
                 name="firstName"
                 value={editForm.firstName}
                 onChange={handeEditChange}
-                style={{
-                  width: "100%",
-                  padding: "5px",
-                  background: "#1a1a2e",
-                  border: "1px solid #333",
-                  color: "white",
-                  borderRadius: "4px",
-                }}
+                className="edit-input"
               />
             ) : (
               <p>{user?.user?.firstName}</p>
@@ -292,14 +365,7 @@ function UserPage() {
                 name="lastName"
                 value={editForm.lastName}
                 onChange={handeEditChange}
-                style={{
-                  width: "100%",
-                  padding: "5px",
-                  background: "#1a1a2e",
-                  border: "1px solid #333",
-                  color: "white",
-                  borderRadius: "4px",
-                }}
+                className="edit-input"
               />
             ) : (
               <p>{user?.user?.lastName}</p>
@@ -319,14 +385,7 @@ function UserPage() {
                     name="university"
                     value={editForm.university}
                     onChange={handeEditChange}
-                    style={{
-                      width: "100%",
-                      padding: "5px",
-                      background: "#1a1a2e",
-                      border: "1px solid #333",
-                      color: "white",
-                      borderRadius: "4px",
-                    }}
+                    className="edit-input"
                   />
                 ) : (
                   <p>{user?.userProfile?.university || "Not provided"}</p>
@@ -339,14 +398,7 @@ function UserPage() {
                     name="course"
                     value={editForm.course}
                     onChange={handeEditChange}
-                    style={{
-                      width: "100%",
-                      padding: "5px",
-                      background: "#1a1a2e",
-                      border: "1px solid #333",
-                      color: "white",
-                      borderRadius: "4px",
-                    }}
+                    className="edit-input"
                   />
                 ) : (
                   <p>{user?.userProfile?.course || "Not provided"}</p>
@@ -360,24 +412,29 @@ function UserPage() {
                     value={editForm.portfolio_link || ""}
                     onChange={handeEditChange}
                     placeholder="https://github.com/..., https://linkedin.com/..."
-                    style={{
-                      width: "100%",
-                      padding: "5px",
-                      background: "#1a1a2e",
-                      border: "1px solid #333",
-                      color: "white",
-                      borderRadius: "4px",
-                    }}
+                    className="edit-input"
                   />
                 ) : (
                   <p>
-                    {user?.userProfile?.portfolio_link && user.userProfile.portfolio_link.length > 0 
-                      ? user.userProfile.portfolio_link.map((link: string, i: number) => (
-                          <span key={i}>
-                            <a href={link} target="_blank" rel="noreferrer" style={{color: "#00f2fe"}}>{link}</a>
-                            {i < user.userProfile!.portfolio_link!.length - 1 ? ", " : ""}
-                          </span>
-                        ))
+                    {user?.userProfile?.portfolio_link &&
+                    user.userProfile.portfolio_link.length > 0
+                      ? user.userProfile.portfolio_link.map(
+                          (link: string, i: number) => (
+                            <span key={i}>
+                              <a
+                                href={link}
+                                target="_blank"
+                                rel="noreferrer"
+                                style={{ color: "#00f2fe" }}
+                              >
+                                {link}
+                              </a>
+                              {i < user.userProfile!.portfolio_link!.length - 1
+                                ? ", "
+                                : ""}
+                            </span>
+                          ),
+                        )
                       : "Not provided"}
                   </p>
                 )}
@@ -394,14 +451,7 @@ function UserPage() {
                     name="company_name"
                     value={editForm.company_name}
                     onChange={handeEditChange}
-                    style={{
-                      width: "100%",
-                      padding: "5px",
-                      background: "#1a1a2e",
-                      border: "1px solid #333",
-                      color: "white",
-                      borderRadius: "4px",
-                    }}
+                    className="edit-input"
                   />
                 ) : (
                   <p>{user?.userProfile?.company_name || "Not provided"}</p>
@@ -415,15 +465,8 @@ function UserPage() {
                     value={editForm.company_description}
                     onChange={handeEditChange}
                     rows={3}
-                    style={{
-                      width: "100%",
-                      padding: "5px",
-                      background: "#1a1a2e",
-                      border: "1px solid #333",
-                      color: "white",
-                      borderRadius: "4px",
-                      resize: "vertical",
-                    }}
+                    className="edit-input"
+                    style={{ resize: "vertical" }}
                   />
                 ) : (
                   <p>
