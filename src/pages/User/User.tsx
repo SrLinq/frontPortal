@@ -19,6 +19,8 @@ interface user {
     company_logo?: string;
     company_name?: string;
     company_description?: string;
+    rating?: number;
+    review_count?: number;
   };
 }
 function UserPage() {
@@ -230,6 +232,13 @@ function UserPage() {
         <h2 className="profile-name">
           {user?.user?.firstName} {user?.user?.lastName}
         </h2>
+        {(user?.userProfile?.rating !== undefined || user?.userProfile?.review_count !== undefined) && (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', marginBottom: '10px' }}>
+            <span style={{ color: '#FFD700', fontSize: '1.2rem' }}>★</span>
+            <span style={{ fontWeight: 'bold' }}>{(user?.userProfile?.rating || 0) > 0 ? user?.userProfile?.rating?.toFixed(1) : "New"}</span>
+            <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>({user?.userProfile?.review_count || 0} reviews)</span>
+          </div>
+        )}
         {role === "student" &&
           !isEditing &&
           (user?.userProfile?.course ? (

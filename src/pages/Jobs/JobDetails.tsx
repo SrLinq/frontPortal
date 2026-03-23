@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { get, post, patch } from "../../api/api";
 import { useAuthStore } from "../../store/authStore";
 
@@ -70,7 +70,9 @@ function JobPage() {
               {proposals.map(p => (
                 <div key={p._id} style={{background: "#1a1a2e", padding: "15px", borderRadius: "8px", border: "1px solid #333"}}>
                   <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-                    <h4 style={{margin: 0}}>{p.freelancer_id?.firstName} {p.freelancer_id?.lastName}</h4>
+                    <Link to={`/freelancer/${p.freelancer_id?._id}`} style={{color: "#00f2fe", textDecoration: "none"}}>
+                      <h4 style={{margin: 0, display: "inline-block"}}>{p.freelancer_id?.firstName} {p.freelancer_id?.lastName}</h4>
+                    </Link>
                     <span style={{color: p.status === 'pending' ? 'orange' : p.status === 'accepted' ? 'green' : 'red'}}>{p.status}</span>
                   </div>
                   <p><strong>Bid Amount:</strong> ${p.bid_amount}</p>

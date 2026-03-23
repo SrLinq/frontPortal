@@ -25,8 +25,21 @@ function ProjectsDashboard() {
   const [reviewText, setReviewText] = useState("");
 
   const fetchContracts = async () => {
-    const data = await get<Contract[]>("/contracts");
-    if (data) setContracts(data);
+    const data = await get<Contract[]>("/contracts") || [];
+    let combined = [...data];
+
+    if (role === "student") {
+      const myProposals = await get<any>("/proposals/my") || [];
+      const pendingProposals = myProposals
+        .filter((p: any) => p.status === "pending")
+        .map((p: any) => ({
+          _id: p._id,
+          payment_status: "pending_approval",
+          proposal_id: p,
+        }));
+      combined = [...combined, ...pendingProposals];
+    }
+    setContracts(combined);
   };
 
   useEffect(() => {
@@ -111,6 +124,7 @@ function ProjectsDashboard() {
             <option value="all">All Projects</option>
             <option value="active">Active</option>
             <option value="completed">Completed</option>
+            {role === "student" && <option value="pending_approval">Pending Proposals</option>}
           </select>
         </div>
 
@@ -125,9 +139,9 @@ function ProjectsDashboard() {
                 <div className="project-card-header">
                   <div>
                     <span
-                      className={`status-badge ${contract.payment_status === "completed" ? "completed" : "active"}`}
+                      className={`status-badge ${contract.payment_status === "completed" ? "completed" : contract.payment_status === "pending_approval" ? "pending" : "active"}`}
                     >
-                      {contract.payment_status}
+                      {contract.payment_status === "pending_approval" ? "Pending Approval" : contract.payment_status}
                     </span>
                     <span className="project-type">
                       {job.type || "Fixed Price"}
