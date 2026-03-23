@@ -22,10 +22,9 @@ function Job() {
       if (filterType) params.append("type", filterType);
       if (minBudget) params.append("minBudget", minBudget);
       if (maxBudget) params.append("maxBudget", maxBudget);
+      if (query) params.append("term", query);
 
-      const url = query 
-        ? `job/search/${query}?${params.toString()}` 
-        : `job?${params.toString()}`;
+      const url = `job/search?${params.toString()}`;
       
       const data = await get<any>(url);
       setJobs(data || []);

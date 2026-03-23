@@ -20,11 +20,10 @@ function Freelancers() {
     try {
       const params = new URLSearchParams();
       if (sortBy) params.append("sortBy", sortBy);
-      if (skillFilter) params.append("skill", skillFilter);
+      if (skillFilter) params.append("skills", skillFilter);
+      if (query) params.append("term", query);
 
-      const url = query 
-        ? `freelancers/search/${query}?${params.toString()}` 
-        : `freelancers?${params.toString()}`;
+      const url = `freelancers/search?${params.toString()}`;
       
       const data = await get<any>(url);
       setFreelancers(data || []);
