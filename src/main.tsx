@@ -21,7 +21,19 @@ import FreelancerPage from "./pages/Freelancers/FreelancerDetails";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      {/* Global toast notification container */}
+      <Navbar />
+      <Routes>
+        <Route path="/freelancers" element={<Freelancers />} />
+        <Route path="/jobs" element={<Job />} />
+        <Route path="/" element={<FirstPage />} />
+        <Route path="/user" element={<UserPage />} />
+        <Route path="/job/:jobId" element={<JobPage />} />
+        <Route path="/projects" element={<ProjectsDashboard />} />
+        <Route path="/post-job" element={<PostJob />} />
+        <Route path="/freelancer/:freelancerId" element={<FreelancerPage />} />
+      </Routes>
+      {/* Global toast notification container — placed after Routes to avoid
+          breaking the #root > div:first-of-type CSS selector used by Navbar */}
       <Toaster
         position="top-right"
         toastOptions={{
@@ -35,17 +47,6 @@ createRoot(document.getElementById("root")!).render(
           error: { iconTheme: { primary: "#f55", secondary: "#1a1a2e" } },
         }}
       />
-      <Navbar />
-      <Routes>
-        <Route path="/freelancers" element={<Freelancers />} />
-        <Route path="/jobs" element={<Job />} />
-        <Route path="/" element={<FirstPage />} />
-        <Route path="/user" element={<UserPage />} />
-        <Route path="/job/:jobId" element={<JobPage />} />
-        <Route path="/projects" element={<ProjectsDashboard />} />
-        <Route path="/post-job" element={<PostJob />} />
-        <Route path="/freelancer/:freelancerId" element={<FreelancerPage />} />
-      </Routes>
     </BrowserRouter>
   </StrictMode>,
 );
