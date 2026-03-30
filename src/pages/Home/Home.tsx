@@ -1,53 +1,59 @@
+/**
+ * Home / Landing Page
+ * Displays login form and registration modal.
+ * Redirects authenticated users to their profile page.
+ */
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { post } from "../../api/api";
 import { useAuthStore } from "../../store/authStore";
+import type { AuthResponse } from "../../types";
 import "./Home.css";
-interface login {
-  access_token: string;
-  role: "student" | "business";
-}
+
 function FirstPage() {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, login } = useAuthStore();
+
+  // Redirect if already logged in
   if (isAuthenticated) {
     window.location.href = "/user";
   }
+
+  // Modal visibility state
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
   const [userType, setUserType] = useState<"student" | "business">("student");
 
-  // Login State
+  // Login form state
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
 
-  // Register State
+  // Registration form state
   const [regFirstName, setRegFirstName] = useState("");
   const [regLastName, setRegLastName] = useState("");
   const [regEmail, setRegEmail] = useState("");
   const [regPassword, setRegPassword] = useState("");
   const [regConfirmPassword, setRegConfirmPassword] = useState("");
-  const { login } = useAuthStore();
 
+  /** Submit login credentials and store JWT token on success */
   const handleLogin = async () => {
-    // Cast to expected response type (add userInfo if your backend returns it)
-    const data = await post<login>("/auth/login", {
+    const data = await post<AuthResponse>("/auth/login", {
       email: loginEmail,
       password: loginPassword,
     });
 
     if (data) {
-      console.log("Login success:", data);
-      const token = data.access_token;
-      const userRole = data.role;
-      login(userRole, token);
+      toast.success("Welcome back!");
+      login(data.role, data.access_token);
       window.location.href = "/user";
     }
   };
 
+  /** Validate and submit registration form */
   const handleRegister = async () => {
     if (regPassword !== regConfirmPassword) {
-      alert("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
-    const data = await post<login>("/auth/register", {
+    const data = await post<AuthResponse>("/auth/register", {
       email: regEmail,
       password: regPassword,
       role: userType,
@@ -56,10 +62,8 @@ function FirstPage() {
     });
 
     if (data) {
-      console.log("Login success:", data);
-      const token = data.access_token;
-      const userRole = data.role;
-      login(userRole, token);
+      toast.success("Account created successfully!");
+      login(data.role, data.access_token);
       window.location.href = "/user";
     }
   };
@@ -105,6 +109,7 @@ function FirstPage() {
         </div>
       </div>
 
+      {/* Registration modal overlay */}
       {isSignUpOpen && (
         <div className="modal-overlay" onClick={closeSignUp}>
           <div
@@ -120,6 +125,7 @@ function FirstPage() {
             </div>
 
             <div className="modal-body">
+              {/* Role selection toggle */}
               <div className="type-toggle">
                 <button
                   className={`toggle-option ${userType === "student" ? "active" : ""}`}

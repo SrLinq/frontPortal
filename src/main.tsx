@@ -1,7 +1,13 @@
+/**
+ * Application root entry point.
+ * Sets up React Router for client-side navigation and
+ * renders the global Navbar + page routes.
+ */
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import ProjectsDashboard from "./pages/ProjectsDashboard/ProjectsDashboard";
 import UserPage from "./pages/User/User";
 import FirstPage from "./pages/Home/Home";
@@ -15,6 +21,20 @@ import FreelancerPage from "./pages/Freelancers/FreelancerDetails";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
+      {/* Global toast notification container */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: "#1a1a2e",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+          success: { iconTheme: { primary: "#00f2fe", secondary: "#1a1a2e" } },
+          error: { iconTheme: { primary: "#f55", secondary: "#1a1a2e" } },
+        }}
+      />
       <Navbar />
       <Routes>
         <Route path="/freelancers" element={<Freelancers />} />
